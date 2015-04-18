@@ -1,0 +1,9 @@
+# Gradle related
+.gradle
+
+# Eclipse related
+/.settings/
+
+# Build related
+/build/
+/bin/
