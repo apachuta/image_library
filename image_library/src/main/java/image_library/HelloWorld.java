@@ -30,7 +30,7 @@ public class HelloWorld {
 	    System.out.println("OpenCV Mat: " + m);
 	    Mat mr1 = m.row(1);
 	    mr1.setTo(new Scalar(1));
-	    Mat mc5 = m.col(5);
+	    Mat mc5 = m.col(3);
 	    mc5.setTo(new Scalar(5));
 	    System.out.println("OpenCV Mat data:\n" + m.dump());
 	}
