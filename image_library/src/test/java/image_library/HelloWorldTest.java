@@ -7,8 +7,9 @@ import org.junit.Test;
 public class HelloWorldTest {
 
 	@Test
-	public void test() {
-		fail("Not yet implemented");
+	public void testHelloWorld() {
+		HelloWorld helloWorld = new HelloWorld("text");
+		assertEquals("test", helloWorld.toString());
 	}
 
 }
