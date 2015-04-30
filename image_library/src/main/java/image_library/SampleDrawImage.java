@@ -1,13 +1,14 @@
 package image_library;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+
+import display.ImageDisplay;
+import display.mark.CircleMark;
 
 public class SampleDrawImage {
 	
@@ -24,15 +25,14 @@ public class SampleDrawImage {
 			e.printStackTrace();
 			return;
 		}
-	    
-	    JFrame frame = new JFrame();
-	    ImageIcon icon = new ImageIcon(image);
-	    JLabel label = new JLabel(icon);
-	    frame.add(label);
-	    frame.setDefaultCloseOperation
-	           (JFrame.EXIT_ON_CLOSE);
-	    frame.pack();
-	    frame.setVisible(true);
+
+	    ImageDisplay imageDisplay = new ImageDisplay();
+	    imageDisplay.setImage(image);
+	    imageDisplay.addMark(new CircleMark());
+	    imageDisplay.addMark(new CircleMark()
+	    	.setPosition(200, 100)
+	    	.setColor(Color.blue));
+	    imageDisplay.show();
 	}
 	
 }
