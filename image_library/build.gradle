@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'application'
 
-mainClassName = 'image_library.SampleDrawImage'
+mainClassName = 'scanner.ScannerMain'
 
 sourceCompatibility = 1.5
 version = '1.0'
