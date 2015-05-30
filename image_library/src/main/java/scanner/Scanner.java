@@ -1,15 +1,9 @@
 package scanner;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import javax.imageio.ImageIO;
 
 import nu.pattern.OpenCV;
 
@@ -21,30 +15,24 @@ import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
-import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
 
-import display.ImageDisplay;
+import common.ImageProcessor;
+import common.VideoProcessor;
 
-public class ScannerMain {
+public class Scanner implements ImageProcessor {
 
-	public static String PROJECT_PATH = System.getProperty("user.dir");
-	public static String RESOURCES_PATH = PROJECT_PATH + "/src/main/resources";
-
-	static { OpenCV.loadLibrary(); }
+	static {
+		OpenCV.loadLibrary();
+	}
 	
-	public static void main(String[] args) throws IOException {
-		
-		Mat image = Highgui.imread(RESOURCES_PATH + "/sheet.jpg");
-		Mat orig = image.clone();
-		
-		double[] pix = image.get(0, 0);
-		System.out.println(Arrays.toString(pix));
+	public Mat processImage(Mat inputImage, int width, int height) {
+		Mat orig = inputImage.clone();
 
-		double scale = resize(image, 500);
+		double scale = resize(inputImage, 500);
 		
 		Mat grey = new Mat();
-		Imgproc.cvtColor(image, grey, Imgproc.COLOR_RGB2GRAY);
+		Imgproc.cvtColor(inputImage, grey, Imgproc.COLOR_RGB2GRAY);
 		Imgproc.GaussianBlur(grey, grey, new Size(5, 5), 0);
 		Imgproc.Canny(grey, grey, 50, 150);
 		
@@ -70,13 +58,11 @@ public class ScannerMain {
 			}
 		}
 		if (contourIdx == contours.size()) {
-			throw new IllegalStateException("Picture doesn't contain a document.");
+			return grey;
 		}
 		
-		Imgproc.drawContours(image, contours, contourIdx, new Scalar(255));
+		Imgproc.drawContours(inputImage, contours, contourIdx, new Scalar(255));
 
-		int width = 800;
-		int height = 600;
 		MatOfPoint2f corners = new MatOfPoint2f(
 				new Point(0,0),
 				new Point(0,height-1),
@@ -90,21 +76,8 @@ public class ScannerMain {
 		Mat transform = Imgproc.getPerspectiveTransform(scaled, corners);
 		Mat document = new Mat();
 		Imgproc.warpPerspective(orig, document, transform, new Size(width, height), Imgproc.INTER_LINEAR);
-		
-		String output_filename = "/tmp/image.png";
 
-		resize(orig, 800);
-		Highgui.imwrite(output_filename, orig);
-		
-	    ImageDisplay imageDisplay = new ImageDisplay();
-	    imageDisplay.setImage(openImage(output_filename));
-	    imageDisplay.show();
-	    
-	    Highgui.imwrite(output_filename, document);
-		
-	    imageDisplay = new ImageDisplay();
-	    imageDisplay.setImage(openImage(output_filename));
-	    imageDisplay.show();
+		return document;
 	}
 	
 	private static double resize(Mat image, int maxDimension) {
@@ -116,15 +89,9 @@ public class ScannerMain {
 		return scale;
 	}
 	
-	private static BufferedImage openImage(String filename) throws IOException {
-		BufferedImage image = null;
-	    try {
-			image = ImageIO.read(new File(filename));
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw e;
-		}
-	    return image;
+	public static void main(String[] args) {
+		VideoProcessor videoProcessor = new VideoProcessor(new Scanner(), 800, 600);
+		videoProcessor.run();
 	}
-	
+
 }

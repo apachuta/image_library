@@ -1,4 +1,4 @@
-package color_detector;
+package common;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
