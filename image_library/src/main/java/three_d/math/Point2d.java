@@ -2,14 +2,22 @@ package three_d.math;
 
 public class Point2d {
 	
-	Point2d() {
+	public Point2d() {
 		this(0, 0);
 	}
 	
-	Point2d(double x, double y) {
+	public Point2d(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}
 	
 	private double x, y;
+
+	public double getX() {
+		return x;
+	}
+
+	public double getY() {
+		return y;
+	}
 }
