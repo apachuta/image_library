@@ -1,6 +1,6 @@
 package dominant_colors;
 
-import static java.util.Collections.shuffle;
+//import static java.util.Collections.shuffle;
 import static java.util.Collections.sort;
 
 import java.util.ArrayList;
@@ -25,20 +25,24 @@ public class DominantColors implements ImageProcessor {
 	public Mat processImage(Mat inputImage, int width, int height) {
 		Size inputSize = inputImage.size();
 		
-		int sampleRatio = 50;
+		int sampleRatio = 10;
+		
+		Mat smallImage = new Mat();
+		Size smallSize = new Size(inputSize.width / sampleRatio, inputSize.height / sampleRatio);
+		Imgproc.resize(inputImage, smallImage, smallSize);
 		
 		List<double[]> pixelsList = new ArrayList<double[]>();
-		for (int i = 0; i < inputSize.height; ++i) {
-			for (int j = 0; j < inputSize.width; ++j) {
-				pixelsList.add(inputImage.get(i, j));
+		for (int i = 0; i < smallSize.height; ++i) {
+			for (int j = 0; j < smallSize.width; ++j) {
+				pixelsList.add(smallImage.get(i, j));
 			}
 		}
-		shuffle(pixelsList);
-		List<double[]> pixelsSample = pixelsList.subList(0, pixelsList.size() / sampleRatio);
+		//shuffle(pixelsList);
+		//List<double[]> pixelsSample = pixelsList.subList(0, pixelsList.size() / sampleRatio);
 		
 		int k = 5;
-		int iterations = 40;
-		List<double[]> means = KMeans.findMeans(pixelsSample, k, iterations);
+		int iterations = 50;
+		List<double[]> means = KMeans.findMeans(pixelsList, k, iterations);
 		
 		sort(means, new Comparator<double[]>() {
 			public int compare(double[] o1, double[] o2) {
