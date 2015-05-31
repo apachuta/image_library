@@ -9,6 +9,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import org.opencv.core.Mat;
+
+import common.MatUtils;
 import display.mark.Mark;
 
 public class ImageDisplay {
@@ -23,6 +26,10 @@ public class ImageDisplay {
 	
 	public void setImage(BufferedImage bufferedImage) {
 		this.bufferedImage = bufferedImage;
+	}
+	
+	public void setImage(Mat mat) {
+		this.bufferedImage = MatUtils.matToImage(mat);
 	}
 	
 	public void addMark(Mark mark) {
