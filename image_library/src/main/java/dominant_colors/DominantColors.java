@@ -17,10 +17,6 @@ import common.ImageProcessor;
 import common.VideoProcessor;
 
 public class DominantColors implements ImageProcessor {
-
-	static {
-		OpenCV.loadLibrary();
-	}
 	
 	public Mat processImage(Mat inputImage, int width, int height) {
 		Size inputSize = inputImage.size();

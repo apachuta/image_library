@@ -1,0 +1,7 @@
+
+    <resources>
+        <string-array name="menu_entries">
+            <item >Dominant Colors</item>
+            <item >Color Detector</item>
+        </string-array>
+    </resources>
