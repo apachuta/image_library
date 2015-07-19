@@ -9,6 +9,6 @@ public class CircleMark extends Mark {
 	public void drawIn(Graphics2D graphics) {
 		graphics.setPaint(color);
 		graphics.setStroke(new BasicStroke(width));
-		graphics.drawOval(x, y, size, size);
+		graphics.drawOval(x - size/2, y - size/2, size, size);
 	}
 }
