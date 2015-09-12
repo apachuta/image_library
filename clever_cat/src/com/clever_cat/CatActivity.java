@@ -1,23 +1,43 @@
 package com.clever_cat;
 
-import android.app.Activity;
-import android.opengl.GLSurfaceView;
-import android.os.Bundle;
-import android.widget.RelativeLayout;
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.OpenCVLoader;
 
-import com.clever_cat.gl.CatGLSurfaceView;
+import android.app.Activity;
+import android.os.Bundle;
+import android.util.Log;
+
+import com.clever_cat.view.CatView;
 
 public class CatActivity extends Activity {
-
-	private GLSurfaceView GLSurfaceView;
+	
+	CatView catView;
+	private static final String TAG = "CatActivity";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		GLSurfaceView = new CatGLSurfaceView(this);
-		setContentView(R.layout.activity_cat);
-		
-		RelativeLayout layout = (RelativeLayout) findViewById(R.id.cat_layout);
-		layout.addView(GLSurfaceView);
-	}	
+        setContentView(R.layout.activity_cat);
+        catView = (CatView) findViewById(R.id.cat_view);
+   	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, new BaseLoaderCallback(this) {
+        	@Override
+        	public void onManagerConnected(int status) {
+                switch (status) {
+	                case SUCCESS: {
+	                    Log.i(TAG, "OpenCV loaded successfully");
+	                    catView.setOpenCVEnabled(true);
+	                } break;
+	                default: {
+	            		super.onManagerConnected(status);
+	                } break;
+                }
+        	}
+		});
+
+	}
 }

@@ -2,4 +2,11 @@
     android:id="@+id/cat_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
+
+    <com.clever_cat.view.CatView
+        android:id="@+id/cat_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textColor="#FFFFFF" />
+
 </RelativeLayout>
