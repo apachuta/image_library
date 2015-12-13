@@ -17,6 +17,9 @@ import com.clever_cat.drawable.CameraPreview;
 import com.clever_cat.drawable.CatDrawable;
 import com.clever_cat.image.BitmapProviderProcessor;
 import com.clever_cat.image.FaceFinder;
+import com.clever_cat.loop.Clock;
+import com.clever_cat.loop.DiscreteClock;
+import com.clever_cat.loop.MainLoop;
 
 public class CatView extends SurfaceView implements SurfaceHolder.Callback {
 
@@ -30,15 +33,20 @@ public class CatView extends SurfaceView implements SurfaceHolder.Callback {
 	private CameraPreview cameraPreview;
 	private FaceFinder faceFinder;
 	private boolean openCVEnabled = false;
+	private MainLoop mainLoop;
+	private DiscreteClock discreteClock;
 	
 	public CatView(Context context, AttributeSet attrs) throws CameraAccessException {
 		super(context, attrs);
 		getHolder().addCallback(this);
 		
 		Log.d("CatView", "CatView");
-		catDrawable = new CatDrawable();
+		discreteClock = new DiscreteClock();
+		discreteClock.setTimeMillis(System.currentTimeMillis());
+		catDrawable = new CatDrawable((Clock) discreteClock);
 		cameraPreview = new CameraPreview();
 		faceFinder = new FaceFinder(context, catDrawable);
+        mainLoop = new MainLoop(this, discreteClock);
 		
 		CameraController cameraController = CameraControllerProvider.getFrontCameraController(context);
 		cameraImagesHandler = new CameraImagesHandler(cameraController);
@@ -62,6 +70,7 @@ public class CatView extends SurfaceView implements SurfaceHolder.Callback {
 		bitmapProviderProcessor.addBitmapProcessor(faceFinder);
 		cameraImagesHandler.addImageProcessor(bitmapProviderProcessor);
 		cameraImagesHandler.startServingImages();
+        mainLoop.start();
 	}
 
 	@Override
@@ -87,9 +96,11 @@ public class CatView extends SurfaceView implements SurfaceHolder.Callback {
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		Log.d("CatView", "surfaceDestroyed");
+		mainLoop.stop();
 		cameraImagesHandler.stopServingImages();
 		cameraImagesHandler.clearImageProcessors();
 		surfaceHolder = null;
+		Log.d("CatView", "surfaceDestroyed2");
 	}
 
 	@Override
@@ -100,9 +111,12 @@ public class CatView extends SurfaceView implements SurfaceHolder.Callback {
 		return true;
 	}
 	
-	void redraw() {
+	public void redraw() {
 		Log.d("CatView", "redraw");
 		Canvas canvas = surfaceHolder.lockCanvas();
+		if (canvas == null) {
+			return;
+		}
 		catDrawable.draw(canvas);
 		cameraPreview.draw(canvas);
 		surfaceHolder.unlockCanvasAndPost(canvas);

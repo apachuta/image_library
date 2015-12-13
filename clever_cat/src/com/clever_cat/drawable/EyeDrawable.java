@@ -1,4 +1,4 @@
-package com.clever_cat.drawable;
+package com.clever_cat.drawable;																						
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -9,25 +9,29 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 
+import com.clever_cat.loop.Clock;
+
 public class EyeDrawable extends Drawable {
 
 	private static final double PUPIL_WIDTH_RATIO = 0.5;
 	private static final double PUPIL_HEIGHT_RATIO = 0.4;
 	
+	private static final long MOVEMENT_TIME_MILLIS = 200;
+	
 	ShapeDrawable eyeballDrawable;
 	ShapeDrawable pupilDrawable;
 	
-	public EyeDrawable() {
+	
+
+	Rect rect;
+	SlidingPoint direction;
+	
+	public EyeDrawable(Clock clock) {
 		eyeballDrawable = new ShapeDrawable(new OvalShape());
 		eyeballDrawable.getPaint().setColor(Color.WHITE);
 		pupilDrawable = new ShapeDrawable(new OvalShape());
 		pupilDrawable.getPaint().setColor(Color.BLACK);
-	}
-	
-	@Override
-	public void draw(Canvas canvas) {
-		eyeballDrawable.draw(canvas);
-		pupilDrawable.draw(canvas);
+		direction = new SlidingPoint(clock, new Point(0, 0));
 	}
 	
 	@Override
@@ -55,8 +59,28 @@ public class EyeDrawable extends Drawable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
+
 	public void setPupilDirection(Rect rect, Point point) {
+		if (!rect.equals(this.rect)) {
+			setPupilDirection(rect, point, 0);
+		} else {
+			setPupilDirection(rect, point, MOVEMENT_TIME_MILLIS);
+		}
+	}
+	
+	public void setPupilDirection(Rect rect, Point point, long inMillis) {
+		this.rect = rect;
+		this.direction.setDesiredPosition(point, inMillis);
+	}
+
+	@Override
+	public void draw(Canvas canvas) {
+		updatePupilDirection(rect, direction.getCurrentPosition());
+		eyeballDrawable.draw(canvas);
+		pupilDrawable.draw(canvas);
+	}
+	
+	private void updatePupilDirection(Rect rect, Point point) {
 		Rect eyeBounds = getBounds();
 		int eyeWidth = eyeBounds.right - eyeBounds.left;
 		int eyeHeight = eyeBounds.bottom - eyeBounds.top;

@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.clever_cat.loop.CyclicTimerProvider;
 import com.clever_cat.view.CatView;
 
 public class CatActivity extends Activity {
@@ -24,7 +25,7 @@ public class CatActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, new BaseLoaderCallback(this) {
+        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_11, this, new BaseLoaderCallback(this) {
         	@Override
         	public void onManagerConnected(int status) {
                 switch (status) {
@@ -38,6 +39,12 @@ public class CatActivity extends Activity {
                 }
         	}
 		});
-
+    CyclicTimerProvider.startLogging();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		CyclicTimerProvider.stopLogging();
 	}
 }

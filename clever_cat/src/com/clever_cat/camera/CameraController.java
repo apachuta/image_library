@@ -2,8 +2,6 @@ package com.clever_cat.camera;
 
 import java.util.Arrays;
 
-import com.clever_cat.view.OrientationState;
-
 import android.content.Context;
 import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraAccessException;
@@ -15,6 +13,8 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
 import android.media.ImageReader;
 import android.util.Log;
+
+import com.clever_cat.view.OrientationState;
 
 public class CameraController {
 
@@ -55,22 +55,20 @@ public class CameraController {
 			@Override
 			public void onOpened(CameraDevice camera) {
 				Log.d("CameraController", "onOpened");
-				
-				Runnable callbackToRun = null;
-				synchronized (CameraController.this) {
-					cameraDevice = camera;
-					callbackToRun = onOpenedCallback;
-				}
-				
-				// TODO: Uncomment for API 23.
-				/*
-				float[] lensPoseRotation = cameraManager.getCameraCharacteristics(cameraDevice.getId())
-						.get(CameraCharacteristics.LENS_POSE_ROTATION);
-				OrientationState.getInstance().setCameraRotation(lensPoseRotation);
-				*/
-
-				if (callbackToRun != null) {
-					callbackToRun.run();
+				try {
+					Runnable callbackToRun = null;
+					synchronized (CameraController.this) {
+						cameraDevice = camera;
+						callbackToRun = onOpenedCallback;
+					}				
+					
+					OrientationState.getInstance().setCameraRotation(getCameraRotation());
+					
+					if (callbackToRun != null) {
+						callbackToRun.run();
+					}
+				} catch (CameraAccessException e) {
+					e.printStackTrace();
 				}
 			}
 
@@ -116,14 +114,27 @@ public class CameraController {
 	 * Starts serving preview images to the returned {@link ImageReader}.
 	 */
 	public ImageReader startServingImages() throws CameraAccessException {
+		/*
 		CameraCharacteristics cameraCharacteristics =
 				cameraManager.getCameraCharacteristics(cameraDevice.getId());
+		StreamConfigurationMap streamConfigurationMap =
+				cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+		Size[] outputSizes = streamConfigurationMap.getOutputSizes(ImageReader.class);
 
+		Log.i("XXXXX", "XXXXX");
+		for (Size outputSize: outputSizes) {
+			Log.i("XXXXX", outputSize.toString());
+		}
+		throw new IllegalStateException();
+		*/
+		
 		// TODO(check size)
-		ImageReader imageReader = ImageReader.newInstance(720, 480, ImageFormat.JPEG, 2);
+		ImageReader imageReader = ImageReader.newInstance(320, 240, ImageFormat.YUV_420_888, 2);
+		
 		CaptureRequest.Builder captureBuilder =
 	            cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
 		captureBuilder.addTarget(imageReader.getSurface());
+		
 		final CaptureRequest captureRequest = captureBuilder.build();
 		
 		cameraDevice.createCaptureSession(
@@ -143,12 +154,13 @@ public class CameraController {
 	
 					@Override
 					public void onConfigureFailed(CameraCaptureSession session) {
-						Log.e("CAMERA", "Capture session configuration failed.");
+						Log.e(TAG, "Capture session configuration failed.");
 					}
 				},
 				null);
 	
 		return imageReader;
+		
 	}
 	
 	/**

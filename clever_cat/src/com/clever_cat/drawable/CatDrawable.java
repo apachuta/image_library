@@ -1,5 +1,7 @@
 package com.clever_cat.drawable;
 
+import com.clever_cat.loop.Clock;
+
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -18,9 +20,9 @@ public class CatDrawable extends Drawable {
 	EyeDrawable leftEye;
 	EyeDrawable rightEye;
 	
-	public CatDrawable() {
-		leftEye = new EyeDrawable();
-		rightEye = new EyeDrawable();
+	public CatDrawable(Clock clock) {
+		leftEye = new EyeDrawable(clock);
+		rightEye = new EyeDrawable(clock);
 	}
 	
 	@Override
@@ -69,7 +71,5 @@ public class CatDrawable extends Drawable {
 	public void setLookDirection(Rect rect, Point point) {
 		leftEye.setPupilDirection(rect, point);
 		rightEye.setPupilDirection(rect, point);
-		
 	}
-
 }

@@ -20,19 +20,17 @@ public class OrientationState {
 		return instance;
 	}
 	
-	
 	public OrientationState() {
-		this.cameraOrientationDegrees = 270;
+		this.cameraOrientationDegrees = 0;
 		this.surfaceOrientationDegrees = 0;
 	}
 	
 	public int getRelativeCameraRotation() {
-		return cameraOrientationDegrees + surfaceOrientationDegrees;
+		return ((cameraOrientationDegrees - surfaceOrientationDegrees) % 360 + 360) % 360; 
 	}
 
-	public void setCameraRotation(float[] cameraRotation) {
-		// TODO: implement for API 23.
-		throw new UnsupportedOperationException("OrientationState.setCameraRotation not implemented.");
+	public void setCameraRotation(int cameraRotationDegrees) {
+		this.cameraOrientationDegrees = cameraRotationDegrees;
 	}
 	
 	public void setDisplayRotation(int displayRotation) {

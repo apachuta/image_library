@@ -6,6 +6,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 import com.clever_cat.image.ImageProcessor;
+import com.clever_cat.loop.CyclicTimer;
+import com.clever_cat.loop.CyclicTimerProvider;
 
 import android.hardware.camera2.CameraAccessException;
 import android.media.Image;
@@ -88,20 +90,22 @@ public class CameraImagesHandler {
 		private static final int ACTIVE_WAITING_DELAY_MS = 50;
 		
 		private ImageReader imageReader;
-		private AtomicBoolean stopped;
+		private AtomicBoolean isActive;
 		
 		public ImageProcessingRunnable(ImageReader imageReader) {
 			this.imageReader = imageReader;
-			stopped = new AtomicBoolean(false);
+			isActive = new AtomicBoolean(true);
 		}
 
 		public void stop() {
-			stopped.set(true);
+			isActive.set(false);
 		}
 		
 		@Override
 		public void run() {
-			while (!stopped.get()) {
+			CyclicTimer cyclicTimer = CyclicTimerProvider.newCyclicTimer("Camera image retrieval");
+			while (isActive.get()) {
+				cyclicTimer.measureBefore();
 				Image latestImage = imageReader.acquireLatestImage();
 				if (latestImage == null) {
 					try {
@@ -111,9 +115,12 @@ public class CameraImagesHandler {
 					}
 					continue;
 				}
+				cyclicTimer.measureAfter();
+				
 				for (ImageProcessor processor : processors) {
 					processor.processImage(latestImage);
 				}
+				
 				latestImage.close();
 			}
 		}
