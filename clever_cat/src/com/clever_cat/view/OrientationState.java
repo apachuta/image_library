@@ -26,7 +26,7 @@ public class OrientationState {
 	}
 	
 	public int getRelativeCameraRotation() {
-		return ((cameraOrientationDegrees - surfaceOrientationDegrees) % 360 + 360) % 360; 
+		return ((cameraOrientationDegrees + surfaceOrientationDegrees) % 360 + 360) % 360; 
 	}
 
 	public void setCameraRotation(int cameraRotationDegrees) {

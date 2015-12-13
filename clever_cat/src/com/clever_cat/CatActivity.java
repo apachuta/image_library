@@ -25,20 +25,25 @@ public class CatActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_11, this, new BaseLoaderCallback(this) {
-        	@Override
-        	public void onManagerConnected(int status) {
-                switch (status) {
-	                case SUCCESS: {
-	                    Log.i(TAG, "OpenCV loaded successfully");
-	                    catView.setOpenCVEnabled(true);
-	                } break;
-	                default: {
-	            		super.onManagerConnected(status);
-	                } break;
+    OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this,
+        new BaseLoaderCallback(this) {
+          @Override
+          public void onManagerConnected(int status) {
+            switch (status) {
+              case SUCCESS: 
+                {
+                  Log.i(TAG, "OpenCV loaded successfully");
+                  catView.setOpenCVEnabled(true);
                 }
-        	}
-		});
+                break;
+              default:
+                {
+                  super.onManagerConnected(status);
+                }
+                break;
+            }
+          }
+        });
     CyclicTimerProvider.startLogging();
 	}
 	

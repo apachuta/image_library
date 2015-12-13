@@ -56,35 +56,34 @@ public final class ImageUtil {
 		int width = image.getWidth();
 		int height = image.getHeight();
 		Plane yPlane = image.getPlanes()[0];
-		//Plane uPlane = image.getPlanes()[1];
-		//Plane vPlane = image.getPlanes()[2];
+		Plane uPlane = image.getPlanes()[1];
+		Plane vPlane = image.getPlanes()[2];
 
 		ByteBuffer yBuffer = yPlane.getBuffer();
-		//ByteBuffer uBuffer = uPlane.getBuffer();
-		//ByteBuffer vBuffer = vPlane.getBuffer();
+		ByteBuffer uBuffer = uPlane.getBuffer();
+		ByteBuffer vBuffer = vPlane.getBuffer();
 		int yRowStride = yPlane.getRowStride();
-		//int yPixelStride = yPlane.getPixelStride();
-		//int uRowStride = uPlane.getRowStride();
-		//int uPixelStride = uPlane.getPixelStride();
-		//int vRowStride = vPlane.getRowStride();
-		//int vPixelStride = vPlane.getPixelStride();
+		int uRowStride = uPlane.getRowStride();
+		int uPixelStride = uPlane.getPixelStride();
+		int vRowStride = vPlane.getRowStride();
+		int vPixelStride = vPlane.getPixelStride();
 
 		IntBuffer intBuffer = IntBuffer.allocate(width * height);
 		intBuffer.rewind();
 		for (int y = 0; y < height; ++y) {
 			for (int x = 0; x < width; ++x) {
-				//int y2 = y/2;
-				//int x2 = x/2;
+				int y2 = y/2;
+				int x2 = x/2;
 				int Y = yBuffer.get(y * yRowStride + x) & 0xff;  // y pixel stride is 1
-				//int Cb = uBuffer.get(y2 * uRowStride + x2 * uPixelStride) & 0xff;
-				//int Cr = vBuffer.get(y2 * vRowStride + x2 * vPixelStride) & 0xff;
+				int Cr = uBuffer.get(y2 * uRowStride + x2 * uPixelStride) & 0xff;
+				int Cb = vBuffer.get(y2 * vRowStride + x2 * vPixelStride) & 0xff;
 				
 				float Yf = 1.164f * (Y - 16.0f);
-				//float Cbf = Cb - 128.0f;
-				//float Crf = Cr - 128.0f;
-				int R = (int) (Yf);  // + 1.402 * Crf);
-				int G = (int) (Yf);  // - 0.34414 * Cbf - 0.71414 * Crf);
-				int B = (int) (Yf);  // + 1.772 * Cbf);
+				float Cbf = Cb - 128.0f;
+				float Crf = Cr - 128.0f;
+				int R = (int) (Yf + 2.018 * Crf);
+				int G = (int) (Yf - 0.813 * Cbf - 0.391 * Crf);
+				int B = (int) (Yf + 1.596 * Cbf);
 				
 				R = R < 0 ? 0 : R > 255 ? 255 : R;
 				G = G < 0 ? 0 : G > 255 ? 255 : G;

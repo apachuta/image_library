@@ -57,7 +57,7 @@ public class DominantColors implements ImageProcessor {
 		Imgproc.resize(inputImage, outputImage, new Size(width, height));
 		
 		for (int i = 0; i < k; ++i) {
-			Core.rectangle(outputImage,
+			Imgproc.rectangle(outputImage,
 					new Point((double) i * width / k, 0),
 					new Point((double) (i+1) * width / k, (double) height / 10),
 					new Scalar(means.get(i)),

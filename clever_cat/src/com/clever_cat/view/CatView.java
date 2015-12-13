@@ -118,7 +118,7 @@ public class CatView extends SurfaceView implements SurfaceHolder.Callback {
 			return;
 		}
 		catDrawable.draw(canvas);
-		cameraPreview.draw(canvas);
+		// cameraPreview.draw(canvas);
 		surfaceHolder.unlockCanvasAndPost(canvas);
 	}
 }

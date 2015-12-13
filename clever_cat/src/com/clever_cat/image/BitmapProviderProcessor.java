@@ -22,7 +22,7 @@ public class BitmapProviderProcessor implements ImageProcessor {
 		Bitmap baseBitmap = ImageUtil.imageYuv420ToBitmap(image);
 		Matrix rotationMatrix = new Matrix();
 		rotationMatrix.postRotate(OrientationState.getInstance().getRelativeCameraRotation());
-		//rotationMatrix.postScale(-1, 1);
+		rotationMatrix.postScale(-1, 1);
 		Bitmap rotatedBitmap = Bitmap.createBitmap(baseBitmap, 
 				0, 0, baseBitmap.getWidth(), baseBitmap.getHeight(), rotationMatrix, true);
 		
