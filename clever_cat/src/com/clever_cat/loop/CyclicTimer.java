@@ -2,26 +2,41 @@ package com.clever_cat.loop;
 
 public class CyclicTimer {
 
+  public static enum Id {
+    CAMERA_IMAGE_RETRIEVAL("Camera image retrieval"),
+    VIEW_REDRAWING("View redrawing");
+
+    private final String name;
+
+    private Id(String name) {
+      this.name = name;
+    }
+
+    public String getName() {
+      return name;
+    }
+  }
+
 	/**
 	 * Convergence constant.
 	 * {@code new_t = old_t * Q + meaured_t * (1-Q)}
 	 */
 	private static final double Q = 0.9;
-	
-	private String name;
+
+	private Id id;
 	private long currentBeforeMillis;
 
 	private long millisSinceThisBefore;
 	private long millisSincePreviousBefore;
-	
+
 	private long passTimeMillis;
 	private long cycleTimeMillis;
-	
-	public CyclicTimer(String name) {
-		this.name = name;
+
+	public CyclicTimer(Id id) {
+		this.id = id;
 		this.currentBeforeMillis = System.currentTimeMillis();
 	}
-	
+
 	public void measureBefore() {
 		long lastBeforeMillis = currentBeforeMillis;
 		currentBeforeMillis = System.currentTimeMillis();
@@ -37,7 +52,7 @@ public class CyclicTimer {
 		millisSincePreviousBefore = currentCycleTimeMillis;
 		cycleTimeMillis = converge(cycleTimeMillis, currentCycleTimeMillis);
 	}
-	
+
 	private void updatePassTime(long currentPassTimeMillis) {
 		millisSinceThisBefore = currentPassTimeMillis;
 		passTimeMillis = converge(passTimeMillis, currentPassTimeMillis);
@@ -48,7 +63,7 @@ public class CyclicTimer {
 	}
 
 	public String getName() {
-		return name;
+		return id.getName();
 	}
 
 	public long getPassTimeMillis() {
@@ -58,7 +73,7 @@ public class CyclicTimer {
 	public long getCycleTimeMillis() {
 		return cycleTimeMillis;
 	}
-	
+
 	public long millisSinceThisBefore() {
 		return millisSinceThisBefore;
 	}

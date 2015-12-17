@@ -103,7 +103,8 @@ public class CameraImagesHandler {
 		
 		@Override
 		public void run() {
-			CyclicTimer cyclicTimer = CyclicTimerProvider.newCyclicTimer("Camera image retrieval");
+			CyclicTimer cyclicTimer =
+			    CyclicTimerProvider.getCyclicTimer(CyclicTimer.Id.CAMERA_IMAGE_RETRIEVAL);
 			while (isActive.get()) {
 				cyclicTimer.measureBefore();
 				Image latestImage = imageReader.acquireLatestImage();

@@ -6,8 +6,7 @@ import com.clever_cat.view.CatView;
 
 public class MainLoop {
 	
-	private static final long MILLIS_IN_SECOND =
-			TimeUnit.SECONDS.toMillis(1L);
+	private static final long MILLIS_IN_SECOND = TimeUnit.SECONDS.toMillis(1L);
 	private static final int EXPECTED_FPS = 30;
 	
 	private CatView catView;
@@ -20,13 +19,19 @@ public class MainLoop {
 		this.discreteClock = discreteClock;
 	}
 	
-	public void start() {
+	public synchronized void start() {
+	  if (isActive) {
+	    return;
+	  }
 		isActive = true;
 		thread = new Thread(new ViewRefresher());
 		thread.start();
 	}
 	
-	public void stop() {
+	public synchronized void stop() {
+	  if (!isActive) {
+	    return;
+	  }
 		isActive = false;
 		try {
 			thread.join();
@@ -39,20 +44,19 @@ public class MainLoop {
 	class ViewRefresher implements Runnable {
 		@Override
 		public void run() {
-			CyclicTimer cyclicTimer = CyclicTimerProvider.newCyclicTimer("View redrawing");
+			CyclicTimer cyclicTimer = CyclicTimerProvider.getCyclicTimer(CyclicTimer.Id.VIEW_REDRAWING);
 			try {
 				while(isActive) {
 					discreteClock.setTimeMillis(System.currentTimeMillis());
 					cyclicTimer.measureBefore();
 					catView.redraw();
 					cyclicTimer.measureAfter();
-					long remainingMillis = MILLIS_IN_SECOND / EXPECTED_FPS - cyclicTimer.millisSinceThisBefore();
+					long remainingMillis =
+					    MILLIS_IN_SECOND / EXPECTED_FPS - cyclicTimer.millisSinceThisBefore();
 					Thread.sleep(Math.max(remainingMillis, 0));
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			} finally {
-				CyclicTimerProvider.deleteCyclicTimer(cyclicTimer);
 			}
 		}
 	}

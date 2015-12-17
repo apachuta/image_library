@@ -26,13 +26,11 @@ public class CameraPreview extends Drawable implements BitmapProcessor {
 	@Override
 	public void setAlpha(int alpha) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void setColorFilter(ColorFilter cf) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

@@ -11,17 +11,18 @@ import com.clever_cat.loop.CyclicTimerProvider;
 import com.clever_cat.view.CatView;
 
 public class CatActivity extends Activity {
-	
-	CatView catView;
+
 	private static final String TAG = "CatActivity";
-	
+
+	private CatView catView;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cat);
         catView = (CatView) findViewById(R.id.cat_view);
    	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -30,7 +31,7 @@ public class CatActivity extends Activity {
           @Override
           public void onManagerConnected(int status) {
             switch (status) {
-              case SUCCESS: 
+              case SUCCESS:
                 {
                   Log.i(TAG, "OpenCV loaded successfully");
                   catView.setOpenCVEnabled(true);
@@ -46,7 +47,7 @@ public class CatActivity extends Activity {
         });
     CyclicTimerProvider.startLogging();
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();

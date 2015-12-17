@@ -1,4 +1,4 @@
-package com.clever_cat.drawable;																						
+package com.clever_cat.drawable;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,22 +10,25 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 
 import com.clever_cat.loop.Clock;
+import com.clever_cat.loop.CyclicTimer;
+import com.clever_cat.loop.CyclicTimerProvider;
 
 public class EyeDrawable extends Drawable {
 
 	private static final double PUPIL_WIDTH_RATIO = 0.5;
 	private static final double PUPIL_HEIGHT_RATIO = 0.4;
-	
-	private static final long MOVEMENT_TIME_MILLIS = 200;
-	
-	ShapeDrawable eyeballDrawable;
-	ShapeDrawable pupilDrawable;
-	
-	
 
-	Rect rect;
-	SlidingPoint direction;
-	
+  private static final double IMAGE_RETRIEVAL_MARGIN = 1.5;
+
+  private final CyclicTimer cameraImageRetrievalTimer =
+      CyclicTimerProvider.getCyclicTimer(CyclicTimer.Id.CAMERA_IMAGE_RETRIEVAL);
+
+	private ShapeDrawable eyeballDrawable;
+	private ShapeDrawable pupilDrawable;
+
+	private Rect rect;
+	private SlidingPoint direction;
+
 	public EyeDrawable(Clock clock) {
 		eyeballDrawable = new ShapeDrawable(new OvalShape());
 		eyeballDrawable.getPaint().setColor(Color.WHITE);
@@ -33,11 +36,11 @@ public class EyeDrawable extends Drawable {
 		pupilDrawable.getPaint().setColor(Color.BLACK);
 		direction = new SlidingPoint(clock, new Point(0, 0));
 	}
-	
+
 	@Override
 	public void setBounds(int left, int top, int right, int bottom) {
 		super.setBounds(left, top, right, bottom);
-	
+
 		eyeballDrawable.setBounds(left, top, right, bottom);
 		setPupilDirection(new Rect(-1, -1, 1, 1), new Point(0, 0));
 	}
@@ -45,13 +48,12 @@ public class EyeDrawable extends Drawable {
 	@Override
 	public void setAlpha(int alpha) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setColorFilter(ColorFilter cf) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -64,10 +66,11 @@ public class EyeDrawable extends Drawable {
 		if (!rect.equals(this.rect)) {
 			setPupilDirection(rect, point, 0);
 		} else {
-			setPupilDirection(rect, point, MOVEMENT_TIME_MILLIS);
+			setPupilDirection(rect, point,
+			    (long) (cameraImageRetrievalTimer.getCycleTimeMillis() * IMAGE_RETRIEVAL_MARGIN));
 		}
 	}
-	
+
 	public void setPupilDirection(Rect rect, Point point, long inMillis) {
 		this.rect = rect;
 		this.direction.setDesiredPosition(point, inMillis);
@@ -79,7 +82,7 @@ public class EyeDrawable extends Drawable {
 		eyeballDrawable.draw(canvas);
 		pupilDrawable.draw(canvas);
 	}
-	
+
 	private void updatePupilDirection(Rect rect, Point point) {
 		Rect eyeBounds = getBounds();
 		int eyeWidth = eyeBounds.right - eyeBounds.left;
@@ -94,7 +97,7 @@ public class EyeDrawable extends Drawable {
 		Point pupilCorner = RectUtil.mapPoint(point, rect, pupilCornerBounds);
 		pupilDrawable.setBounds(
 				pupilCorner.x,
-				pupilCorner.y, 
+				pupilCorner.y,
 				pupilCorner.x + pupilWidth,
 				pupilCorner.y + pupilHeight);
 	}
