@@ -12,7 +12,6 @@ import org.opencv.objdetect.CascadeClassifier;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
-import android.media.Image;
 
 import com.clever_cat.R;
 import com.clever_cat.drawable.CatDrawable;
@@ -23,8 +22,8 @@ public class FaceFinder implements BitmapProcessor {
 	private CatDrawable catDrawable;
 
 	private CascadeClassifier classifier;
-	
-	
+
+
 	public FaceFinder(Context context, CatDrawable catDrawable) {
 		this.catDrawable = catDrawable;
 		this.context = context;
@@ -49,25 +48,25 @@ public class FaceFinder implements BitmapProcessor {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void processBitmap(Bitmap bitmap) {
 		if (classifier == null) {
 			return;
 		}
-		
-		Mat mat = ImageUtil.bitmapToMat(bitmap);	
+
+		Mat mat = ImageUtil.bitmapToMat(bitmap);
 		MatOfRect faceDetections = new MatOfRect();
 		classifier.detectMultiScale(mat, faceDetections);
 		Rect selectedRect = selectRectangle(faceDetections);
 		if (selectedRect != null) {
 			catDrawable.setLookDirection(
-					new android.graphics.Rect(0, 0, mat.width(), mat.height()), 
-					new Point(selectedRect.x + selectedRect.width / 2, 
+					new android.graphics.Rect(0, 0, mat.width(), mat.height()),
+					new Point(selectedRect.x + selectedRect.width / 2,
 							selectedRect.y + selectedRect.height / 2));
 		}
 	}
-		
+
 	private Rect selectRectangle(MatOfRect matOfRect) {
 		Rect[] rects = matOfRect.toArray();
 		if(rects.length != 0) {
